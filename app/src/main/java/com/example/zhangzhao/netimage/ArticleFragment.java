@@ -99,7 +99,8 @@ public class ArticleFragment extends Fragment implements GestureDetector.OnGestu
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        return false;
+        mViewFlipper.getCurrentView().setX(distanceX);
+        return true;
     }
 
     @Override
@@ -113,7 +114,7 @@ public class ArticleFragment extends Fragment implements GestureDetector.OnGestu
 
             Log.d(TAG, "Fling To Left....");
             //向左滑动
-            mViewFlipper.setOutAnimation(getActivity().getApplicationContext(),R.anim.left_out);
+            mViewFlipper.setOutAnimation(getActivity().getApplicationContext(), R.anim.left_out);
             mViewFlipper.setInAnimation(getActivity().getApplicationContext(), R.anim.right_in);
             mViewFlipper.showNext();
 

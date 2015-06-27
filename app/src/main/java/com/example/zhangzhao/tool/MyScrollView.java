@@ -1,6 +1,7 @@
 package com.example.zhangzhao.tool;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.ScrollView;
@@ -14,6 +15,10 @@ public class MyScrollView extends ScrollView{
 
     public MyScrollView(Context context) {
         super(context);
+    }
+
+    public MyScrollView(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 
     public void setmGestureDetector(GestureDetector gestureDetector){
