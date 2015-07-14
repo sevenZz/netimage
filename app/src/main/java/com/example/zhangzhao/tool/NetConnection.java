@@ -36,6 +36,7 @@ public class NetConnection {
                     case POST:
                         uc = new URL(url).openConnection();
                         uc.setDoOutput(true);
+                        uc.setReadTimeout(5000);
                         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(uc.getOutputStream(), Config.CHARSET));
                         bw.write(stringBuffer.toString());
                         bw.flush();

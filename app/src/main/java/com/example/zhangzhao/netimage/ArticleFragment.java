@@ -20,6 +20,7 @@ import android.widget.ViewFlipper;
 import com.example.zhangzhao.entity.Article;
 import com.example.zhangzhao.tool.Config;
 import com.example.zhangzhao.tool.GetArticle;
+import com.example.zhangzhao.tool.MyScrollView;
 import com.example.zhangzhao.tool.ResolveXml;
 import com.example.zhangzhao.tool.NetConnection;
 
@@ -29,7 +30,8 @@ import java.util.List;
 public class ArticleFragment extends Fragment implements GestureDetector.OnGestureListener{
 
     public boolean onTouchEvent(MotionEvent event){
-        return mGestureDetector.onTouchEvent(event);
+        myScrollView.setmGestureDetector(mGestureDetector);
+        return myScrollView.onTouchEvent(event);
     }
 
     private static final String TAG = "ArticleFragment";
@@ -40,6 +42,7 @@ public class ArticleFragment extends Fragment implements GestureDetector.OnGestu
     TextView textArticleAuthor;
     TextView textArticle;
     GestureDetector mGestureDetector;
+    MyScrollView myScrollView;
 
 
     @Override
@@ -59,6 +62,7 @@ public class ArticleFragment extends Fragment implements GestureDetector.OnGestu
         textArticle = (TextView) view.findViewById(R.id.textArticle);
         textTitle = (TextView) view.findViewById(R.id.textTitle);
         textArticleAuthor = (TextView) view.findViewById(R.id.textArticleAuthor);
+        myScrollView = (MyScrollView) view.findViewById(R.id.myScrollView);
 
         final ProgressDialog pd = ProgressDialog.show(getActivity(),"","");
         new GetArticle("7",new GetArticle.SuccessCallback() {
