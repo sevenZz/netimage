@@ -21,18 +21,10 @@ import com.example.zhangzhao.entity.Article;
 import com.example.zhangzhao.tool.Config;
 import com.example.zhangzhao.tool.GetArticle;
 import com.example.zhangzhao.tool.MyScrollView;
-import com.example.zhangzhao.tool.ResolveXml;
-import com.example.zhangzhao.tool.NetConnection;
 
-import java.util.List;
 
 
 public class ArticleFragment extends Fragment implements GestureDetector.OnGestureListener{
-
-    public boolean onTouchEvent(MotionEvent event){
-        myScrollView.setmGestureDetector(mGestureDetector);
-        return myScrollView.onTouchEvent(event);
-    }
 
     private static final String TAG = "ArticleFragment";
 
@@ -43,6 +35,8 @@ public class ArticleFragment extends Fragment implements GestureDetector.OnGestu
     TextView textArticle;
     GestureDetector mGestureDetector;
     MyScrollView myScrollView;
+
+    private MainActivity.MyTouchListener myTouchListener;
 
 
     @Override
@@ -57,12 +51,29 @@ public class ArticleFragment extends Fragment implements GestureDetector.OnGestu
         Log.d(TAG, "onCreateView....");
 
         View view = inflater.inflate(R.layout.fragment_article, container, false);
+
         mViewFlipper = (ViewFlipper) view.findViewById(R.id.viewFlipper);
+
         mGestureDetector = new GestureDetector(getActivity().getApplicationContext(),this);
+
         textArticle = (TextView) view.findViewById(R.id.textArticle);
         textTitle = (TextView) view.findViewById(R.id.textTitle);
         textArticleAuthor = (TextView) view.findViewById(R.id.textArticleAuthor);
         myScrollView = (MyScrollView) view.findViewById(R.id.myScrollView);
+
+        myScrollView.setmGestureDetector(mGestureDetector);
+
+
+        myTouchListener = new MainActivity.MyTouchListener() {
+            @Override
+            public boolean onTouchEvent(MotionEvent event) {
+
+                return myScrollView.onTouchEvent(event);
+            }
+        };
+        ((MainActivity)getActivity()).registerMyTouchListener(myTouchListener);
+
+
 
         final ProgressDialog pd = ProgressDialog.show(getActivity(),"","");
         new GetArticle("7",new GetArticle.SuccessCallback() {
@@ -86,6 +97,7 @@ public class ArticleFragment extends Fragment implements GestureDetector.OnGestu
     }
 
 
+
     @Override
     public boolean onDown(MotionEvent e) {
         return false;
@@ -103,7 +115,15 @@ public class ArticleFragment extends Fragment implements GestureDetector.OnGestu
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        mViewFlipper.getCurrentView().setX(distanceX);
+        if (e1.getX() - e2.getX() > 30 || e2.getX() - e1.getX() > 30){
+            mViewFlipper.getCurrentView().setX(e2.getX() - e1.getX());
+        }
+
+
+        //Log.d("CurrentView.X", String.valueOf(mViewFlipper.getCurrentView().getX()));
+        //Log.d("DistanceX", String.valueOf(distanceX));
+        //Log.d("RealDistanceX", String.valueOf(e2.getX() - e1.getX()));
+
         return true;
     }
 
@@ -114,22 +134,23 @@ public class ArticleFragment extends Fragment implements GestureDetector.OnGestu
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        if (e1.getX() > e2.getX()){
+        if (e1.getX() - e2.getX() > 200){
 
             Log.d(TAG, "Fling To Left....");
             //向左滑动
             mViewFlipper.setOutAnimation(getActivity().getApplicationContext(), R.anim.left_out);
             mViewFlipper.setInAnimation(getActivity().getApplicationContext(), R.anim.right_in);
             mViewFlipper.showNext();
-
-        }else if (e2.getX() > e1.getX()){
+        }else if (e2.getX() - e1.getX() > 200){
             //向右滑动
             mViewFlipper.setOutAnimation(getActivity().getApplicationContext(), R.anim.right_out);
             mViewFlipper.setInAnimation(getActivity().getApplicationContext(), R.anim.left_in);
             mViewFlipper.showPrevious();
         }else{
+            mViewFlipper.getCurrentView().setX(0);
             return false;
         }
+        mViewFlipper.getCurrentView().setX(0);
         return true;
     }
 }

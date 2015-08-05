@@ -34,7 +34,7 @@ public class MyScrollView extends ScrollView{
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         mGestureDetector.onTouchEvent(ev);
-        super.dispatchTouchEvent(ev);
-        return true;
+
+        return super.dispatchTouchEvent(ev);
     }
 }

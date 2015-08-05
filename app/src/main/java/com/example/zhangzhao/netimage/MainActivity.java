@@ -9,8 +9,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends FragmentActivity implements MainFragment.OnFragmentInteractionListener{
@@ -120,5 +124,33 @@ public class MainActivity extends FragmentActivity implements MainFragment.OnFra
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+
+    //回调接口
+    public interface MyTouchListener{
+        boolean onTouchEvent(MotionEvent event);
+    }
+
+    //保存MyTouchListener接口的列表
+    private ArrayList<MyTouchListener> myTouchListeners = new ArrayList<MyTouchListener>();
+
+    //提供给Fragment通过getActivity()方法来注册自己的触摸事件的方法
+    public void registerMyTouchListener(MyTouchListener listener){
+        myTouchListeners.add(listener);
+    }
+
+    //提供给Fragment通过getActivity()方法来取消注册自己的触摸事件的方法
+    public void unRegisterMyTouchListener(MyTouchListener listener){
+        myTouchListeners.remove(listener);
+    }
+
+    //分发触摸事件给所有注册了MyTouchListener的接口
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        for (MyTouchListener listener : myTouchListeners){
+            listener.onTouchEvent(ev);
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }
