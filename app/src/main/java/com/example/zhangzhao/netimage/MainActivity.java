@@ -3,6 +3,7 @@ package com.example.zhangzhao.netimage;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +24,8 @@ import java.util.List;
 public class MainActivity extends FragmentActivity implements MainFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "MainActivity";
+    //记录页面id号，用于标记页面
+    public static int pageID = 0;
 
     Button mainButton;
     Button articleButton;
@@ -35,10 +41,30 @@ public class MainActivity extends FragmentActivity implements MainFragment.OnFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        pageID = 1;
+
         mainButton = (Button) findViewById(R.id.rbMain);
         articleButton = (Button) findViewById(R.id.rbArticle);
 
         mainButton.setBackgroundColor(Color.BLUE);
+
+        //用SharedPreferences来存储文章页面的id号，即第几篇文章
+        SharedPreferences mySharedPreferences = getSharedPreferences("id", MODE_PRIVATE);
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putInt("id", 0);
+        editor.commit();
+
+
+        //使用cache来存储文章页面的id号
+        File file = getCacheDir();
+        try {
+            FileOutputStream a = new FileOutputStream(file);
+            a.write(pageID);
+            a.flush();
+            a.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
 
 
         //创建页面时直接把两个Fragment new出来，然后切出去时隐藏，切回来时显示。
@@ -59,6 +85,12 @@ public class MainActivity extends FragmentActivity implements MainFragment.OnFra
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        File file = getCacheDir();
+        file.delete();
+    }
 
     private class onMainButtonClickListener implements View.OnClickListener{
 
